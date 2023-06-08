@@ -23,7 +23,7 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
+ENV.fetch("BUNDLE_GEMFILE", nil) ||= File.expand_path("../Gemfile", __dir__)
 
 require "bundler/setup"
 require "dotenv/load"
@@ -33,7 +33,7 @@ require "httparty"
 require "json"
 require "securerandom"
 
-inbound = STDIN.read
+inbound = $stdin.read
 mail = Mail.read_from_string(inbound)
 
 text = mail.parts.find { |p| p.mime_type == "text/plain" }
