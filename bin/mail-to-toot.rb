@@ -32,6 +32,18 @@ require "httparty"
 require "json"
 require "securerandom"
 
+OPENINGS = [
+  "I'm back on my bike bullshit again.",
+  "Time to burn the calories...",
+  "These messages are random to not annoy you with the same thing each time I ride.",
+  "Ride ride ride my bike, gently down the street.",
+  "IT'S HAPPENING!",
+  "Holy Pedal Power, Batman!",
+  "I'm on my bike, and I'm ready to ride!",
+  "And miles to go before I sleep...",
+  "<insert your meme here>"
+].freeze
+
 inbound = $stdin.read
 mail = Mail.read_from_string(inbound)
 
@@ -45,11 +57,11 @@ headers = {
 }
 
 status = <<~MESSAGE
-  I'm back on my bike bullshit again.
+  #{OPENINGS.sample}
 
   Follow me as I ride at #{url}
 
-  #biking
+  #auto-post #biking #wahooligan #biketoot #mastobikes
 MESSAGE
 
 # Since this is coming out of mail, we'll just fire and forget
