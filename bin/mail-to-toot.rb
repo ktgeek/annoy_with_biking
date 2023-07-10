@@ -36,7 +36,7 @@ OPENINGS = [
   "I'm back on my bike bullshit again.",
   "Time to burn the calories...",
   "These messages are random to not annoy you with the same thing each time I ride.",
-  "Ride ride ride my bike, gently down the street.",
+  "Ride ride ride my bike, gently down the street...",
   "IT'S HAPPENING!",
   "Holy Pedal Power, Batman!",
   "I'm on my bike, and I'm ready to ride!",
@@ -49,6 +49,8 @@ mail = Mail.read_from_string(inbound)
 
 text = mail.parts.find { |p| p.mime_type == "text/plain" }
 url = URI.extract(text.decode_body, /http(s)?/).find { |u| u.include?("/users/live/") }
+
+exit unless url
 
 headers = {
   "Authorization" => "Bearer #{ENV.fetch('ACCESS_TOKEN', nil)}",
@@ -64,5 +66,15 @@ status = <<~MESSAGE
   #auto-post #biking #wahooligan #biketoot #mastobikes
 MESSAGE
 
-# Since this is coming out of mail, we'll just fire and forget
-HTTParty.post("#{ENV.fetch('BASE_URL', nil)}/api/v1/statuses", headers:, body: { status: }.to_json)
+# Since this is coming out of mail, we'll just fire and forget... well, not totally forget, we've been running into DNS
+# resolution errors on the first try, so we'll sleep for a bit and return if there is an error
+DELAY_BETWEEN_ATTEMPTS = 151
+begin
+  attempts ||= 0
+  HTTParty.post("#{ENV.fetch('BASE_URL', nil)}/api/v1/statuses", headers:, body: { status: }.to_json)
+rescue StandardError
+  raise unless (attempts += 1) < 5
+
+  sleep(DELAY_BETWEEN_ATTEMPTS * attempts)
+  retry
+end
