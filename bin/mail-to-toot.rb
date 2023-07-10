@@ -68,7 +68,7 @@ MESSAGE
 
 # Since this is coming out of mail, we'll just fire and forget... well, not totally forget, we've been running into DNS
 # resolution errors on the first try, so we'll sleep for a bit and return if there is an error
-DELAY_BETWEEN_ATTEMPTS = 151
+DELAY_BETWEEN_ATTEMPTS = 15
 begin
   attempts ||= 0
   HTTParty.post("#{ENV.fetch('BASE_URL', nil)}/api/v1/statuses", headers:, body: { status: }.to_json)
